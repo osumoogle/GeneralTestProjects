@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="urn:hl7-org:v3" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:hl7-org:v3" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <xsd:element name="PRPA_IN201305UV02">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="creationTime" type="tns:TS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="interactionId" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingModeCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="acceptAckCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="receiver" type="tns:Receiver" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="respondTo" type="tns:RespondTo" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="sender" type="tns:Sender" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="controlActProcess" type="tns:QueryControlActRequestOfQueryByParameterOfDemographicsParameterList" />
+          </xsd:sequence>
+          <xsd:anyAttribute />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="II">
+        <xsd:attribute name="root" type="xsd:string" />
+        <xsd:attribute name="extension" type="xsd:string" />
+        <xsd:attribute name="assigningAuthorityName" type="xsd:string" />
+        <xsd:attribute name="nullFlavor" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="PRPA_MT201302UV02.Patient.id">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:II" />
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TS">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:SXCM_TS">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="operator" type="xsd:string" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="SXCM_TS">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:TimeBase">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="hull" type="tns:IVL_TS" />
+            </xsd:sequence>
+            <xsd:attribute name="literal" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TimeBase">
+        <xsd:attribute name="value" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="IVL_TS">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:SXCM_TS">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="low" type="tns:TS" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="high" type="tns:TS" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="center" type="tns:TS" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="width" type="tns:PQ" />
+            </xsd:sequence>
+            <xsd:attribute name="institutionSpecified" type="xsd:boolean" use="required" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PQ">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="translation" type="tns:PhysicalQuantityRepresentation" />
+            </xsd:sequence>
+            <xsd:attribute name="nullFlavor" type="xsd:string" />
+            <xsd:attribute name="value" type="xsd:double" use="required" />
+            <xsd:attribute name="unit" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="GeneralValueSpecification" />
+      <xsd:complexType name="CV">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:attribute name="nullFlavor" type="xsd:string" />
+            <xsd:attribute name="code" type="xsd:string" />
+            <xsd:attribute name="codeSystem" type="xsd:string" />
+            <xsd:attribute name="codeSystemName" type="xsd:string" />
+            <xsd:attribute name="codeSystemVersion" type="xsd:string" />
+            <xsd:attribute name="displayName" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CE">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:CV">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="originalText" type="tns:ED" />
+              <xsd:element minOccurs="0" maxOccurs="unbounded" name="translation" type="tns:CD" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ED" mixed="true">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="reference" type="tns:TEL" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="thumbnail" type="tns:ED" />
+            </xsd:sequence>
+            <xsd:attribute name="representation" type="xsd:string" />
+            <xsd:attribute name="mediaType" type="xsd:string" />
+            <xsd:attribute name="language" type="xsd:string" />
+            <xsd:attribute name="compression" type="xsd:string" />
+            <xsd:attribute name="integrityCheck" type="xsd:string" />
+            <xsd:attribute name="integrityCheckAlgorithm" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TEL" mixed="true">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="useablePeriod" type="tns:SXCM_TS" />
+            </xsd:sequence>
+            <xsd:attribute name="use" type="xsd:string" />
+            <xsd:attribute name="value" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ST">
+        <xsd:complexContent mixed="true">
+          <xsd:extension base="tns:ED" />
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CD">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:CE" />
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="INT">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:attribute name="value" type="xsd:int" use="required" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="BL">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:GeneralValueSpecification">
+            <xsd:attribute name="value" type="xsd:boolean" use="required" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="PhysicalQuantityRepresentation">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="originalText" type="tns:ED" />
+        </xsd:sequence>
+        <xsd:attribute name="nullFlavor" type="xsd:string" />
+        <xsd:attribute name="value" type="xsd:double" use="required" />
+        <xsd:attribute name="code" type="xsd:string" />
+        <xsd:attribute name="codeSystem" type="xsd:string" />
+        <xsd:attribute name="codeSystemName" type="xsd:string" />
+        <xsd:attribute name="codeSystemVersion" type="xsd:string" />
+        <xsd:attribute name="displayName" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="EIVL_TS">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:SXCM_TS">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="event" type="tns:CE" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="offset" type="tns:IVL_PQ" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="IVL_PQ">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="low" type="tns:PQ" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="high" type="tns:PQ" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="center" type="tns:PQ" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="width" type="tns:PQ" />
+        </xsd:sequence>
+        <xsd:attribute name="nullFlavor" type="xsd:string" />
+        <xsd:attribute name="unit" type="xsd:string" />
+        <xsd:attribute name="value" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="PIVL_TS">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:SXCM_TS">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="period" type="tns:PQ" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="phase" type="tns:IVL_TS" />
+            </xsd:sequence>
+            <xsd:attribute name="institutionSpecified" type="xsd:boolean" use="required" />
+            <xsd:attribute name="alignment" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CS">
+        <xsd:attribute name="code" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Receiver">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="telecom" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="device" type="tns:Device" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Device">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="name" type="tns:EN" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="desc" type="tns:ED" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="existenceTime" type="tns:IVL_TS" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="telecom" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="manufacturerModelName" type="tns:CharacterStringWithCode" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="softwareName" type="tns:CharacterStringWithCode" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="asAgent" type="tns:Agent" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="determinerCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="EN" mixed="true">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="validTime" type="tns:IVL_TS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="prefix" type="tns:EntityNamePart" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="given" type="tns:EntityNamePart" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="family" type="tns:EntityNamePart" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="suffix" type="tns:EntityNamePart" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="delimiter" type="tns:EntityNamePart" />
+        </xsd:sequence>
+        <xsd:attribute name="use" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="EntityNamePart">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:string">
+            <xsd:attribute name="qualifier" type="xsd:string" />
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:complexType name="PN">
+        <xsd:complexContent mixed="true">
+          <xsd:extension base="tns:EN" />
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CharacterStringWithCode">
+        <xsd:attribute name="code" type="xsd:string" />
+        <xsd:attribute name="codeSystem" type="xsd:string" />
+        <xsd:attribute name="codeSystemName" type="xsd:string" />
+        <xsd:attribute name="codeSystemVersion" type="xsd:string" />
+        <xsd:attribute name="displayName" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Agent">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="representedOrganization" type="tns:Organization" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Organization">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="determinerCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="RespondTo">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="telecom" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="entityRsp" type="tns:EntityRsp" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="EntityRsp">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="name" type="tns:EN" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="telecom" type="tns:TEL" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="determinerCode" type="xsd:string" />
+        <xsd:attribute name="id" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Sender">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="telecom" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="device" type="tns:Device" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="QueryControlActRequestOfQueryByParameterOfDemographicsParameterList">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ControlActProcessCore">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="code" type="tns:CD" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="authorOrPerformer" type="tns:AuthorOrPerformer" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="queryByParameter" type="tns:QueryByParameterOfDemographicsParameterList" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ControlActProcessCore" abstract="true">
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="moodCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="RegistryQueryResponseControlActOfSubject1DemographicsParameterList">
+        <xsd:complexContent mixed="false">
+          <xsd:extension base="tns:ControlActProcessCore">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="code" type="tns:CD" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="authorOrPerformer" type="tns:AuthorOrPerformer" />
+              <xsd:element minOccurs="0" maxOccurs="unbounded" name="subject" type="tns:Subject1" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="queryAck" type="tns:QueryAck" />
+              <xsd:element minOccurs="0" maxOccurs="1" name="queryByParameter" type="tns:QueryByParameterOfDemographicsParameterList" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="AuthorOrPerformer">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="assignedDevice" type="tns:AssignedDevice" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="AssignedDevice">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Subject1">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="registrationEvent" type="tns:RegistrationEvent" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="RegistrationEvent">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="statusCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="subject1" type="tns:Subject2" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="custodian" type="tns:Custodian" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="moodCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Subject2">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="patient" type="tns:Patient" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Patient">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="statusCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="veryImportantPersonCode" type="tns:CE" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="patientPerson" type="tns:Person" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="subjectOf1" type="tns:Subject" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Person">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="name" type="tns:PN" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="telecom" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="administrativeGenderCode" type="tns:CE" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="birthTime" type="tns:TS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="deceasedInd" type="tns:BL" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="addr" type="tns:AD" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="asOtherIDs" type="tns:OtherIDs" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="languageCommunication" type="tns:LanguageCommunication" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="determinerCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="AD">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="streetAddressLine" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="city" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="state" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="postalCode" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="country" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="houseNumber" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="county" type="xsd:string" />
+        </xsd:sequence>
+        <xsd:attribute name="use" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="OtherIDs">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="scopingOrganization" type="tns:OrganizationIdentifiedConfirmable" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="OrganizationIdentifiedConfirmable">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="id" type="tns:II" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="determinerCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="LanguageCommunication">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="languageCode" type="tns:CE" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Subject">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="queryMatchObservation" type="tns:QueryMatchObservation" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="QueryMatchObservation">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="code" type="tns:CD" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:GeneralValueSpecification" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+        <xsd:attribute name="moodCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Custodian">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="assignedEntity" type="tns:AssignedEntity" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="AssignedEntity">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="code" type="tns:CE" />
+        </xsd:sequence>
+        <xsd:attribute name="classCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="QueryAck">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="queryId" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="statusCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="queryResponseCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="resultTotalQuantity" type="tns:INT" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="resultCurrentQuantity" type="tns:INT" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="resultRemainingQuantity" type="tns:INT" />
+        </xsd:sequence>
+        <xsd:attribute name="nullFlavor" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="QueryByParameterOfDemographicsParameterList">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="queryId" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="statusCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="modifyCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="responseModalityCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="responsePriorityCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="initialQuantity" type="tns:INT" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="initialQuantityCode" type="tns:CD" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="parameterList" type="tns:DemographicsParameterList" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="DemographicsParameterList">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="livingSubjectAdministrativeGender" type="tns:ParameterItemOfCodedWithEquivalents" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="livingSubjectBirthPlaceAddress" type="tns:ParameterItemOfListOfPostalAddress" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="livingSubjectBirthPlaceName" type="tns:ParameterItemOfListOfEntityName" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="livingSubjectBirthTime" type="tns:ParameterItemOfPointInTime" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="livingSubjectDeceasedTime" type="tns:ParameterItemOfPointInTime" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="livingSubjectId" type="tns:ParameterItemOfListOfInstanceIdentifier" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="livingSubjectName" type="tns:ParameterItemOfEntityName" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mothersMaidenName" type="tns:ParameterItemOfEntityName" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="otherIDsScopingOrganization" type="tns:ParameterItemOfListOfInstanceIdentifier" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="patientAddress" type="tns:ParameterItemOfPostalAddress" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="patientStatusCode" type="tns:ParameterItemOfCodedValue" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="patientTelecom" type="tns:ParameterItemOfListOfTelecommunicationAddress" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="principalCareProviderId" type="tns:ParameterItemOfInstanceIdentifier" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="principalCareProvisionId" type="tns:ParameterItemOfInstanceIdentifier" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfCodedWithEquivalents">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:CE" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfListOfPostalAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="value" type="tns:AD" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfListOfEntityName">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="value" type="tns:EN" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfPointInTime">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:TS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfListOfInstanceIdentifier">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="value" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfEntityName">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:EN" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfPostalAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:AD" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfCodedValue">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:CV" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfListOfTelecommunicationAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="value" type="tns:TEL" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ParameterItemOfInstanceIdentifier">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="value" type="tns:II" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="semanticsText" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="PRPA_IN201306UV02">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="creationTime" type="tns:TS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="interactionId" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingModeCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="acceptAckCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="receiver" type="tns:Receiver" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="sender" type="tns:Sender" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="acknowledgement" type="tns:Acknowledgement" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="controlActProcess" type="tns:RegistryQueryResponseControlActOfSubject1DemographicsParameterList" />
+          </xsd:sequence>
+          <xsd:anyAttribute />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Acknowledgement">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="typeCode" type="tns:CS" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="messageWaitingPriorityCode" type="tns:CE" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="targetMessage" type="tns:TargetMessage" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="acknowledgementDetail" type="tns:AcknowledgementDetail" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="TargetMessage">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="AcknowledgementDetail">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="code" type="tns:CE" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="text" type="xsd:string" />
+        </xsd:sequence>
+        <xsd:attribute name="typeCode" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:element name="MCCI_IN000002UV01">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="1" name="id" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="creationTime" type="tns:TS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="interactionId" type="tns:II" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="processingModeCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="acceptAckCode" type="tns:CS" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="reciever" type="tns:Receiver" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="sender" type="tns:Sender" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="acknowledgement" type="tns:Acknowledgement" />
+          </xsd:sequence>
+          <xsd:anyAttribute />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:ihe:iti:xcpd:2009">
+      <xsd:element name="PatientLocationQueryRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element xmlns:q1="urn:ihe:iti:xcpd:2009" minOccurs="0" maxOccurs="1" name="RequestedPatientId" type="q1:PatientId" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="PatientId">
+        <xsd:attribute name="root" type="xsd:string" />
+        <xsd:attribute name="extension" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:element name="PatientLocationQueryResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element xmlns:q2="urn:ihe:iti:xcpd:2009" minOccurs="0" maxOccurs="unbounded" name="PatientLocationResponse" type="q2:PatientLocationResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="PatientLocationResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="HomeCommunityId" type="xsd:string" />
+          <xsd:element xmlns:q3="urn:ihe:iti:xcpd:2009" minOccurs="0" maxOccurs="1" name="CorrespondingPatientId" type="q3:PatientId" />
+          <xsd:element xmlns:q4="urn:ihe:iti:xcpd:2009" minOccurs="0" maxOccurs="1" name="RequestedPatientId" type="q4:PatientId" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PatientRegistryQueryByDemographics">
+    <wsdl:part name="parameters" element="tns:PRPA_IN201305UV02" />
+  </wsdl:message>
+  <wsdl:message name="PatientRegistryFindCandidatesResponse">
+    <wsdl:part name="parameters" element="tns:PRPA_IN201306UV02" />
+  </wsdl:message>
+  <wsdl:message name="PatientRegistryAcknowledgement">
+    <wsdl:part name="parameters" element="tns:MCCI_IN000002UV01" />
+  </wsdl:message>
+  <wsdl:message name="PatientLocationQueryRequest">
+    <wsdl:part xmlns:q5="urn:ihe:iti:xcpd:2009" name="parameters" element="q5:PatientLocationQueryRequest" />
+  </wsdl:message>
+  <wsdl:message name="PatientLocationQueryResponse">
+    <wsdl:part xmlns:q6="urn:ihe:iti:xcpd:2009" name="parameters" element="q6:PatientLocationQueryResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IRespondingGatewaySync">
+    <wsdl:operation name="CrossGatewayPatientDiscovery">
+      <wsdl:input wsaw:Action="urn:hl7-org:v3:PRPA_IN201305UV02:CrossGatewayPatientDiscovery" name="PatientRegistryQueryByDemographics" message="tns:PatientRegistryQueryByDemographics" />
+      <wsdl:output wsaw:Action="urn:hl7-org:v3:PRPA_IN201306UV02:CrossGatewayPatientDiscovery" name="PatientRegistryFindCandidatesResponse" message="tns:PatientRegistryFindCandidatesResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayPatientDiscoveryDeferredRequest">
+      <wsdl:input wsaw:Action="urn:hl7-org:v3:PRPA_IN201305UV02:Deferred:CrossGatewayPatientDiscovery" name="PatientRegistryQueryByDemographics" message="tns:PatientRegistryQueryByDemographics" />
+      <wsdl:output wsaw:Action="urn:hl7-org:v3:MCCI_IN000002UV01" name="PatientRegistryAcknowledgement" message="tns:PatientRegistryAcknowledgement" />
+    </wsdl:operation>
+    <wsdl:operation name="PatientLocationQuery">
+      <wsdl:input wsaw:Action="urn:ihe:iti:2009:PatientLocationQuery" name="PatientLocationQueryRequest" message="tns:PatientLocationQueryRequest" />
+      <wsdl:output wsaw:Action="urn:ihe:iti:2009:PatientLocationQueryResponse" name="PatientLocationQueryResponse" message="tns:PatientLocationQueryResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

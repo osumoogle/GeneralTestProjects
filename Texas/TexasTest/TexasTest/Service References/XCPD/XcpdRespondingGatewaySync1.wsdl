@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="urn:hl7-org:v3" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="XcpdRespondingGatewaySync" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="IRespondingGatewaySync_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:KeyType xmlns:t="http://schemas.xmlsoap.org/ws/2005/02/trust">http://schemas.xmlsoap.org/ws/2005/02/trust/SymmetricKey</t:KeyType>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust10>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="IRespondingGatewaySync1_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:import namespace="urn:hl7-org:v3" location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc?wsdl=wsdl0" />
+  <wsdl:types />
+  <wsdl:binding name="IRespondingGatewaySync" type="i0:IRespondingGatewaySync">
+    <wsp:PolicyReference URI="#IRespondingGatewaySync_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayPatientDiscovery">
+      <soap12:operation soapAction="urn:hl7-org:v3:PRPA_IN201305UV02:CrossGatewayPatientDiscovery" style="document" />
+      <wsdl:input name="PatientRegistryQueryByDemographics">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientRegistryFindCandidatesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayPatientDiscoveryDeferredRequest">
+      <soap12:operation soapAction="urn:hl7-org:v3:PRPA_IN201305UV02:Deferred:CrossGatewayPatientDiscovery" style="document" />
+      <wsdl:input name="PatientRegistryQueryByDemographics">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientRegistryAcknowledgement">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PatientLocationQuery">
+      <soap12:operation soapAction="urn:ihe:iti:2009:PatientLocationQuery" style="document" />
+      <wsdl:input name="PatientLocationQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientLocationQueryResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IRespondingGatewaySync1" type="i0:IRespondingGatewaySync">
+    <wsp:PolicyReference URI="#IRespondingGatewaySync1_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayPatientDiscovery">
+      <soap12:operation soapAction="urn:hl7-org:v3:PRPA_IN201305UV02:CrossGatewayPatientDiscovery" style="document" />
+      <wsdl:input name="PatientRegistryQueryByDemographics">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientRegistryFindCandidatesResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayPatientDiscoveryDeferredRequest">
+      <soap12:operation soapAction="urn:hl7-org:v3:PRPA_IN201305UV02:Deferred:CrossGatewayPatientDiscovery" style="document" />
+      <wsdl:input name="PatientRegistryQueryByDemographics">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientRegistryAcknowledgement">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PatientLocationQuery">
+      <soap12:operation soapAction="urn:ihe:iti:2009:PatientLocationQuery" style="document" />
+      <wsdl:input name="PatientLocationQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="PatientLocationQueryResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="XcpdRespondingGatewaySync">
+    <wsdl:port name="IRespondingGatewaySync" binding="tns:IRespondingGatewaySync">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc/ce" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc/ce</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRespondingGatewaySync1" binding="tns:IRespondingGatewaySync1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRespondingGatewaySync2" binding="tns:IRespondingGatewaySync1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc/nosaml" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/XcpdRespondingGatewaySync.svc/nosaml</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRespondingGatewaySync_eHEX" binding="tns:IRespondingGatewaySync1">
+      <soap12:address location="https://open-ic.epic.com:4437/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com:4437/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
