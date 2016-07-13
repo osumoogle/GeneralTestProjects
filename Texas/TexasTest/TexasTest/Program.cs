@@ -69,7 +69,6 @@ namespace TexasTest
                     id = new[] { new II { root = $"{HomeCommunityId}.2344" } }
                 }
             };
-            var respondTo = new RespondTo();
             var sender = new Sender
             {
                 typeCode = "SND",
@@ -133,7 +132,7 @@ namespace TexasTest
             //return results;
             var ack = client.CrossGatewayPatientDiscovery(ref id, ref creationTime, ref interactionId,
                 ref processingCode,
-                ref processingModeCode, ref acceptAckCode, ref receiver, respondTo, ref sender, controlActProcess,
+                ref processingModeCode, ref acceptAckCode, ref receiver, null, ref sender, controlActProcess,
                 ref attributes, out controlActProcessResponse);
             client.Close();
             return ack;
