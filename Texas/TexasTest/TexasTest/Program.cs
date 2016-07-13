@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ServiceModel;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using TexasTest.XCPD;
 
@@ -11,12 +13,14 @@ namespace TexasTest
 
         static void Main(string[] args)
         {
-            var ack = DoStuff();
+            var results = DoStuff();
 
-            //while (!task.IsFaulted && !task.IsCompleted)
+            //while (results.Result == null && !results.IsFaulted)
             //{
             //    Thread.Sleep(10);
             //}
+
+
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
         }
@@ -25,17 +29,46 @@ namespace TexasTest
         {
             var client = new RespondingGatewaySyncClient(new WSHttpBinding(SecurityMode.Transport),
                 new EndpointAddress(
-                    "https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc"));
-
+                    "https://open-ic.epic.com/interconnect-ce-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc/nosaml"));
 
             client.Open();
-            var id = new II();
-            var creationTime = new TS();
-            var interactionId = new II();
-            var processingCode = new CS();
-            var processingModeCode = new CS();
-            var acceptAckCode = new CS();
-            var receiver = new Receiver();
+            var id = new II
+            {
+                assigningAuthorityName = "Kno2",
+                root = $"{HomeCommunityId}.12334"
+            };
+            var creationTime = new TS
+            {
+                value = DateTime.UtcNow.ToString("yyyyMMddhhmmss")
+            };
+            var interactionId = new II
+            {
+                root = "2.16.840.1.113883.1.6",
+                extension = "PRPA_IN201305UV02"
+            };
+            var processingCode = new CS
+            {
+                code = "T"
+            };
+            var processingModeCode = new CS
+            {
+                code = "I"
+            };
+            var acceptAckCode = new CS
+            {
+                code = "AL"
+            };
+            var receiver = new Receiver
+            {
+                typeCode = "RCV",
+                device = new Device
+                {
+                    classCode = "DEV",
+                    determinerCode = "INSTANCE",
+                    telecom = new[] { new TEL { value = "http://kno2fy.com" } },
+                    id = new[] { new II { root = $"{HomeCommunityId}.2344" } }
+                }
+            };
             var respondTo = new RespondTo();
             var sender = new Sender
             {
@@ -48,11 +81,11 @@ namespace TexasTest
                     asAgent = new Agent
                     {
                         classCode = "AGNT",
-                        representedOrganization = new Organization()
+                        representedOrganization = new Organization
                         {
                             classCode = "ORG",
                             determinerCode = "INSTANCE",
-                            id = new II { root = HomeCommunityId }
+                            id = new II { root = HomeCommunityId },
                         }
                     }
                 }
@@ -82,15 +115,22 @@ namespace TexasTest
                                 },
                             semanticsText = "LivingSubject.name"
                         },
-                        livingSubjectAdministrativeGender = new ParameterItemOfCodedWithEquivalents()
+                        livingSubjectAdministrativeGender = new ParameterItemOfCodedWithEquivalents
                         {
                             value = new CE { code = "M" }
                         }
                     }
                 }
             };
-            XmlAttribute[] attributes = null;
+            XmlAttribute[] attributes = new XmlAttribute[0];
             var controlActProcessResponse = new RegistryQueryResponseControlActOfSubject1DemographicsParameterList();
+            //var results = await
+            //        client.CrossGatewayPatientDiscoveryAsync(new PatientRegistryQueryByDemographics(id, creationTime,
+            //            interactionId, processingCode, processingModeCode, acceptAckCode, receiver, respondTo,
+            //            sender,
+            //            controlActProcess, attributes));
+            //client.Close();
+            //return results;
             var ack = client.CrossGatewayPatientDiscovery(ref id, ref creationTime, ref interactionId,
                 ref processingCode,
                 ref processingModeCode, ref acceptAckCode, ref receiver, respondTo, ref sender, controlActProcess,
