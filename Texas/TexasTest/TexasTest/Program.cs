@@ -56,6 +56,11 @@ namespace TexasTest
                 Subject = new ClaimsIdentity(new List<Claim>()
                 {
                     new Claim(ClaimTypes.NameIdentifier, "test"),
+                    new Claim("urn:oasis:names:tc:xspa:1.0:subject:subject-id", "test"),
+                    new Claim("urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName", "test"),
+                    new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization", $"urn:oid:{HomeCommunityId}"),
+                    new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization-id", $"urn:oid:{HomeCommunityId}"),
+                    new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}"),
                     new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}")
                 }),
                 SigningCredentials = new X509SigningCredentials(cert, SecurityAlgorithms.RsaSha1Signature, SecurityAlgorithms.Sha1Digest),
@@ -72,12 +77,14 @@ namespace TexasTest
 
         private static PatientRegistryFindCandidatesResponse DoStuff()
         {
-            var binding = new WS2007FederationHttpBinding(WSFederationHttpSecurityMode.TransportWithMessageCredential);
-            binding.Security.Message.IssuedKeyType = SecurityKeyType.SymmetricKey;
-            binding.Security.Message.EstablishSecurityContext = false;
-            var endpoint = new EndpointAddress(
-                    "https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc");
-            var factory = new ChannelFactory<IRespondingGatewaySyncChannel>(binding, endpoint);
+            //var binding = new WS2007FederationHttpBinding(WSFederationHttpSecurityMode.TransportWithMessageCredential);
+            //binding.Security.Message.IssuedKeyType = SecurityKeyType.SymmetricKey;
+            //binding.Security.Message.EstablishSecurityContext = false;
+            //var endpoint = new EndpointAddress(
+            //        "https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc");
+            
+            //var factory = new ChannelFactory<IRespondingGatewaySyncChannel>(binding, endpoint);
+            var factory = new ChannelFactory<IRespondingGatewaySyncChannel>("IRespondingGatewaySync");
             factory.Credentials.SupportInteractive = false;
             factory.Credentials.UseIdentityConfiguration = true;
             //factory.Credentials.ClientCertificate.SetCertificate(CertificateName, StoreLocation.LocalMachine, StoreName.My);
