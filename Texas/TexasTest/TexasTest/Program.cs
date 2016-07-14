@@ -1,5 +1,15 @@
 ﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IdentityModel.Protocols.WSTrust;
+using System.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Xml;
 using TexasTest.XCPD;
 
@@ -8,6 +18,8 @@ namespace TexasTest
     class Program
     {
         private const string HomeCommunityId = "2.16.840.1.113883.3.3126.20.3.7";
+        //private const string CertificateName = "CN=Kno2, O=Kno2, L=Boise, S=Idaho, C=US";
+        private const string CertificateName = "CN=kno2fy-cq.com";
 
         static void Main(string[] args)
         {
@@ -21,12 +33,56 @@ namespace TexasTest
             Console.ReadLine();
         }
 
-        private static Acknowledgement DoStuff()
+        private static Saml2SecurityToken GeneratedSaml2Token()
         {
-            var client = new RespondingGatewaySyncClient(new WSHttpBinding(SecurityMode.Transport),
-                new EndpointAddress(
-                    "https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc"));
+            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+            var certs = store.Certificates.Find(X509FindType.FindBySubjectDistinguishedName, CertificateName, false);
+            var cert = certs.Cast<X509Certificate2>().FirstOrDefault();
 
+            if (cert == null)
+                throw new Exception("Unable to find certificate");
+
+            var rsa = cert.PrivateKey as RSACryptoServiceProvider;
+            var rsaClause = new RsaKeyIdentifierClause(rsa);
+            var ski = new SecurityKeyIdentifier(rsaClause);
+            var issueInstant = DateTime.UtcNow;
+            var descriptor = new SecurityTokenDescriptor
+            {
+                TokenIssuerName = CertificateName,
+                TokenType = SecurityTokenTypes.Saml,
+                Lifetime = new Lifetime(issueInstant, issueInstant + new TimeSpan(8, 0, 0)),
+                //AppliesToAddress = "http://localhost/RelyingPartyApplication",
+                Subject = new ClaimsIdentity(new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "test"),
+                    new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}")
+                }),
+                SigningCredentials = new X509SigningCredentials(cert, SecurityAlgorithms.RsaSha1Signature, SecurityAlgorithms.Sha1Digest),
+                Proof = new AsymmetricProofDescriptor(ski)
+            };
+
+            var tokenHandler = new Saml2SecurityTokenHandler(new SamlSecurityTokenRequirement());
+            var token = tokenHandler.CreateToken(descriptor) as Saml2SecurityToken;
+            var rsaKey = new RsaSecurityKey(rsa);
+            var keys = new ReadOnlyCollection<SecurityKey>(new SecurityKey[] { rsaKey });
+
+            return new Saml2SecurityToken(token.Assertion, keys, new X509SecurityToken(cert));
+        }
+
+        private static PatientRegistryFindCandidatesResponse DoStuff()
+        {
+            var binding = new WS2007FederationHttpBinding(WSFederationHttpSecurityMode.TransportWithMessageCredential);
+            binding.Security.Message.IssuedKeyType = SecurityKeyType.SymmetricKey;
+            binding.Security.Message.EstablishSecurityContext = false;
+            var endpoint = new EndpointAddress(
+                    "https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/xcpdrespondinggatewaysync.svc");
+            var factory = new ChannelFactory<IRespondingGatewaySyncChannel>(binding, endpoint);
+            factory.Credentials.SupportInteractive = false;
+            factory.Credentials.UseIdentityConfiguration = true;
+            //factory.Credentials.ClientCertificate.SetCertificate(CertificateName, StoreLocation.LocalMachine, StoreName.My);
+
+            var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
 
             client.Open();
             var id = new II();
@@ -90,11 +146,19 @@ namespace TexasTest
                 }
             };
             XmlAttribute[] attributes = null;
-            var controlActProcessResponse = new RegistryQueryResponseControlActOfSubject1DemographicsParameterList();
-            var ack = client.CrossGatewayPatientDiscovery(ref id, ref creationTime, ref interactionId,
-                ref processingCode,
-                ref processingModeCode, ref acceptAckCode, ref receiver, respondTo, ref sender, controlActProcess,
-                ref attributes, out controlActProcessResponse);
+            var request = new PatientRegistryQueryByDemographics(
+                id,
+                creationTime,
+                interactionId,
+                processingCode,
+                processingModeCode,
+                acceptAckCode,
+                receiver,
+                null,
+                sender,
+                controlActProcess,
+                attributes);
+            var ack = client.CrossGatewayPatientDiscovery(request);
             client.Close();
             return ack;
         }
