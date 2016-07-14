@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text;
 using System.Xml;
 using TexasTest.XCPD;
 
@@ -24,6 +26,9 @@ namespace TexasTest
         static void Main(string[] args)
         {
             var ack = DoStuff();
+
+            Console.WriteLine($"{ack.controlActProcess.subject != null}");
+            Console.WriteLine($"{ack.controlActProcess.queryAck.queryResponseCode.code}");
 
             //while (!task.IsFaulted && !task.IsCompleted)
             //{
@@ -89,6 +94,8 @@ namespace TexasTest
             factory.Credentials.UseIdentityConfiguration = true;
             //factory.Credentials.ClientCertificate.SetCertificate(CertificateName, StoreLocation.LocalMachine, StoreName.My);
 
+            ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
+
             var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
 
             client.Open();
@@ -148,7 +155,27 @@ namespace TexasTest
                         livingSubjectAdministrativeGender = new ParameterItemOfCodedWithEquivalents()
                         {
                             value = new CE { code = "M" }
-                        }
+                        },
+                        livingSubjectBirthTime = new ParameterItemOfPointInTime
+                        {
+                            value = new TS
+                            {
+                                value = "19820102"
+                            }
+                        },
+                        patientAddress = new ParameterItemOfPostalAddress
+                        {
+                            value = new AD
+                            {
+                                city = "Helena",
+                                state = "AL",
+                                streetAddressLine = new[]
+                                {
+                                    "1200 Test Street"
+                                },
+                                postalCode = "35080",
+                            },
+                        },
                     }
                 }
             };
@@ -298,4 +325,316 @@ namespace TexasTest
     //        }
     //    });
     //}
+
+    public class CustomTextMessageEncoder : MessageEncoder
+    {
+        private CustomTextMessageEncoderFactory factory;
+        private XmlWriterSettings writerSettings;
+        private string contentType;
+
+        public CustomTextMessageEncoder(CustomTextMessageEncoderFactory factory)
+        {
+            this.factory = factory;
+
+            this.writerSettings = new XmlWriterSettings();
+            //this.writerSettings.Encoding = Encoding.GetEncoding(factory.CharSet);
+            this.contentType = string.Format("{0}; charset={1}",
+                this.factory.MediaType, this.writerSettings.Encoding.HeaderName);
+        }
+
+        public override string ContentType
+        {
+            get
+            {
+                return this.contentType;
+            }
+        }
+
+        public override string MediaType
+        {
+            get
+            {
+                return factory.MediaType;
+            }
+        }
+
+        public override MessageVersion MessageVersion
+        {
+            get
+            {
+                return this.factory.MessageVersion;
+            }
+        }
+
+        public override Message ReadMessage(ArraySegment<byte> buffer, BufferManager bufferManager, string contentType)
+        {
+            byte[] msgContents = new byte[buffer.Count];
+            Array.Copy(buffer.Array, buffer.Offset, msgContents, 0, msgContents.Length);
+            bufferManager.ReturnBuffer(buffer.Array);
+
+            MemoryStream stream = new MemoryStream(msgContents);
+            stream = ProcessMemoryStream(stream, false);
+            return ReadMessage(stream, int.MaxValue);
+        }
+
+        public override Message ReadMessage(Stream stream, int maxSizeOfHeaders, string contentType)
+        {
+            stream = ProcessMemoryStream(stream, false);
+            XmlReader reader = XmlReader.Create(stream);
+            return Message.CreateMessage(reader, maxSizeOfHeaders, this.MessageVersion);
+        }
+
+        public override ArraySegment<byte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
+        {
+            MemoryStream stream = new MemoryStream();
+            XmlWriter writer = XmlWriter.Create(stream);
+            message.WriteMessage(writer);
+            writer.Close();
+
+            byte[] messageBytes = stream.GetBuffer();
+            int messageLength = (int)stream.Position;
+            stream.Close();
+
+            int totalLength = messageLength + messageOffset;
+            byte[] totalBytes = bufferManager.TakeBuffer(totalLength);
+            Array.Copy(messageBytes, 0, totalBytes, messageOffset, messageLength);
+
+            ArraySegment<byte> byteArray = new ArraySegment<byte>(totalBytes, messageOffset, messageLength);
+            return byteArray;
+        }
+
+        public override void WriteMessage(Message message, Stream stream)
+        {
+            stream = ProcessMemoryStream(stream, false);
+            XmlWriter writer = XmlWriter.Create(stream);
+            message.WriteMessage(writer);
+            writer.Close();
+        }
+
+        private MemoryStream ProcessMemoryStream(Stream inputStream, bool dispose)
+        {
+            StreamWriter xmlStream = null;
+            var outputStream = new MemoryStream();
+            bool continueFilter = false;
+            try
+            {
+                xmlStream = new StreamWriter(outputStream);
+                using (var reader = XmlReader.Create(inputStream))
+                {
+                    using (
+                        var writer = XmlWriter.Create(xmlStream,
+                            new XmlWriterSettings() { ConformanceLevel = ConformanceLevel.Auto }))
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.LocalName.Equals("SignatureConfirmation") &&
+                                reader.NamespaceURI.Equals(
+                                    "http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd"))
+                            {
+                                if (!reader.IsEmptyElement) continueFilter = reader.IsStartElement();
+                            }
+                            else if (reader.LocalName.Equals("Signature") &&
+                                     reader.NamespaceURI.Equals("http://www.w3.org/2000/09/xmldsig#"))
+                            {
+                                if (!reader.IsEmptyElement) continueFilter = reader.IsStartElement();
+                            }
+                            else if (continueFilter)
+                            {
+                                // continue to next node
+                            }
+                            else
+                                XmlHelper.WriteShallowNode(reader, writer);
+                        }
+                        writer.Flush();
+                    }
+                    reader.Close();
+                }
+                outputStream.Position = 0;
+                return outputStream;
+            }
+            catch (Exception ex)
+            {
+                // handle error
+                throw;
+            }
+            finally
+            {
+                if (xmlStream != null && dispose) xmlStream.Dispose();
+            }
+        }
+
+        internal static class XmlHelper
+        {
+            internal static void WriteShallowNode(XmlReader reader, XmlWriter writer)
+            {
+                if (reader == null)
+                {
+                    throw new ArgumentNullException("reader");
+                }
+                if (writer == null)
+                {
+                    throw new ArgumentNullException("writer");
+                }
+
+                switch (reader.NodeType)
+                {
+                    case XmlNodeType.Element:
+                        writer.WriteStartElement(reader.Prefix, reader.LocalName, reader.NamespaceURI);
+                        writer.WriteAttributes(reader, true);
+                        if (reader.IsEmptyElement)
+                        {
+                            writer.WriteEndElement();
+                        }
+                        break;
+                    case XmlNodeType.Text:
+                        writer.WriteString(reader.Value);
+                        break;
+                    case XmlNodeType.Whitespace:
+                    case XmlNodeType.SignificantWhitespace:
+                        writer.WriteWhitespace(reader.Value);
+                        break;
+                    case XmlNodeType.CDATA:
+                        writer.WriteCData(reader.Value);
+                        break;
+                    case XmlNodeType.EntityReference:
+                        writer.WriteEntityRef(reader.Name);
+                        break;
+                    case XmlNodeType.XmlDeclaration:
+                    case XmlNodeType.ProcessingInstruction:
+                        writer.WriteProcessingInstruction(reader.Name, reader.Value);
+                        break;
+                    case XmlNodeType.DocumentType:
+                        writer.WriteDocType(reader.Name, reader.GetAttribute("PUBLIC"), reader.GetAttribute("SYSTEM"),
+                            reader.Value);
+                        break;
+                    case XmlNodeType.Comment:
+                        writer.WriteComment(reader.Value);
+                        break;
+                    case XmlNodeType.EndElement:
+                        writer.WriteFullEndElement();
+                        break;
+                }
+            }
+        }
+    }
+
+
+    public class CustomTextMessageEncoderFactory : MessageEncoderFactory
+    {
+        private MessageEncoder encoder;
+        private MessageVersion version;
+        private string mediaType;
+        private string charSet;
+
+        internal CustomTextMessageEncoderFactory(string mediaType, string charSet,
+            MessageVersion version)
+        {
+            this.version = version;
+            this.mediaType = mediaType;
+            this.charSet = charSet;
+            this.encoder = new CustomTextMessageEncoder(this);
+        }
+
+        public override MessageEncoder Encoder
+        {
+            get
+            {
+                return this.encoder;
+            }
+        }
+
+        public override MessageVersion MessageVersion
+        {
+            get
+            {
+                return this.version;
+            }
+        }
+
+        internal string MediaType
+        {
+            get
+            {
+                return this.mediaType;
+            }
+        }
+
+        internal string CharSet
+        {
+            get
+            {
+                return this.charSet;
+            }
+        }
+    }
+
+    public class CustomTextMessageBindingElement : MessageEncodingBindingElement
+    {
+        public string Encoding { get; set; }
+        public string MediaType { get; set; }
+
+        public CustomTextMessageBindingElement(string encoding, string mediaType, MessageVersion version)
+        {
+            this.MediaType = mediaType;
+            this.Encoding = encoding;
+            this.MessageVersion = version;
+        }
+
+        CustomTextMessageBindingElement(CustomTextMessageBindingElement binding)
+            : this(binding.Encoding, binding.MediaType, binding.MessageVersion)
+        {
+        }
+
+        public CustomTextMessageBindingElement(): this("UTF-8", "application/soap+xml", MessageVersion.Soap12WSAddressing10)
+        {
+            
+        }
+
+        public override MessageVersion MessageVersion { get; set; }
+
+        public override BindingElement Clone()
+        {
+            return new CustomTextMessageBindingElement();
+        }
+
+        public override MessageEncoderFactory CreateMessageEncoderFactory()
+        {
+            return new CustomTextMessageEncoderFactory(MediaType, Encoding, MessageVersion);
+        }
+
+        public override IChannelFactory<TChannel> BuildChannelFactory<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.BuildInnerChannelFactory<TChannel>();
+        }
+
+        public override bool CanBuildChannelFactory<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            return context.CanBuildInnerChannelFactory<TChannel>();
+        }
+
+        public override IChannelListener<TChannel> BuildChannelListener<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.BuildInnerChannelListener<TChannel>();
+        }
+
+        public override bool CanBuildChannelListener<TChannel>(BindingContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            context.BindingParameters.Add(this);
+            return context.CanBuildInnerChannelListener<TChannel>();
+        }
+    }
 }
