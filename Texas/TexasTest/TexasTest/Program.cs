@@ -12,6 +12,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Web.Script.Serialization;
 using TexasTest.XCPD;
+using TexasTest.XCA;
 
 namespace TexasTest
 {
@@ -51,9 +52,11 @@ namespace TexasTest
                             AddressInformation = patient.patientPerson.addr.Select(a => new AddressInfo(a)),
                             Gender = patient.patientPerson.administrativeGenderCode.code,
                             IsDeceased = patient.patientPerson.deceasedInd.value,
+                            StatusCode = patient.statusCode.code,
                             BirthDate =
                                 DateTime.ParseExact(patient.patientPerson.birthTime.value, "yyyyMMdd",
-                                    CultureInfo.CurrentCulture)
+                                    CultureInfo.CurrentCulture),
+                            MatchConfidencePercent = patient.subjectOf1.queryMatchObservation.value
                         }));
             }
 
@@ -61,8 +64,8 @@ namespace TexasTest
             {
                 var serializer = new JavaScriptSerializer();
                 Console.WriteLine(serializer.Serialize(patient));
+                GetDocumentMetaData(patient);
             }
-
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
         }
@@ -86,7 +89,6 @@ namespace TexasTest
                 TokenIssuerName = CertificateName,
                 TokenType = SecurityTokenTypes.Saml,
                 Lifetime = new Lifetime(issueInstant, issueInstant + new TimeSpan(8, 0, 0)),
-                //AppliesToAddress = "http://localhost/RelyingPartyApplication",
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, "test"),
@@ -109,16 +111,21 @@ namespace TexasTest
             return new Saml2SecurityToken(token.Assertion, keys, new X509SecurityToken(cert));
         }
 
-        private static PatientRegistryFindCandidatesResponse DoStuff(PatientName name, AddressInfo address, DateTime birthDate, string gender)
+        private static T GetClient<T>()
         {
-            var factory = new ChannelFactory<IRespondingGatewaySyncChannel>("IRespondingGatewaySync");
+            var factory = new ChannelFactory<T>("IRespondingGatewaySync");
             factory.Credentials.SupportInteractive = false;
             factory.Credentials.UseIdentityConfiguration = true;
 
             ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
 
-            var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
+            return factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
+        }
 
+        private static PatientRegistryFindCandidatesResponse DoStuff(PatientName name, AddressInfo address, DateTime birthDate, string gender)
+        {
+
+            var client = GetClient<IRespondingGatewaySyncChannel>();
             client.Open();
             var id = new II();
             var creationTime = new TS();
@@ -218,6 +225,26 @@ namespace TexasTest
             var ack = client.CrossGatewayPatientDiscovery(request);
             client.Close();
             return ack;
+        }
+
+        private static void GetDocumentMetaData(PatientDemographicInfo info)
+        {
+            var factory = new ChannelFactory<IQuery>("IQuery");
+            factory.Credentials.SupportInteractive = false;
+            factory.Credentials.UseIdentityConfiguration = true;
+
+            //((CustomBinding) factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
+
+            var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
+
+            var response = client.CrossGatewayQuerySyncRequest(new AdhocQueryRequest
+            {
+                AdhocQuery = new AdhocQuery
+                {
+                    id = info.PatientIdentifier.First().Identifier
+                }
+            });
+            Console.WriteLine("XCA query didn't crash...");
         }
     }
 }

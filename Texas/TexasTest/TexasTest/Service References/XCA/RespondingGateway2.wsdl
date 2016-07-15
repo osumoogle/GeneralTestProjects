@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="urn:ihe:iti:xds-b:2007" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:ihe:iti:xds-b:2007" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:ihe:iti:xds-b:2007">
+      <xsd:element name="RetrieveDocumentSetRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="DocumentRequest" type="tns:DocumentRequest" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="DocumentRequest">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="HomeCommunityId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="RepositoryUniqueId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="DocumentUniqueId" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="RetrieveDocumentSetResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element xmlns:q1="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" minOccurs="0" maxOccurs="1" ref="q1:RegistryResponse" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="DocumentResponse" type="tns:DocumentResponse" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="DocumentResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="1" name="HomeCommunityId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="RepositoryUniqueId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="DocumentUniqueId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="NewRepositoryUniqueId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="NewDocumentUniqueId" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="mimeType" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="1" name="Document" type="xsd:base64Binary" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+      <xsd:element xmlns:q2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" name="RegistryErrorList" type="q2:RegistryErrorList" />
+      <xsd:complexType name="RegistryErrorList">
+        <xsd:sequence>
+          <xsd:element xmlns:q3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" minOccurs="0" maxOccurs="unbounded" name="RegistryError" type="q3:RegistryError" />
+        </xsd:sequence>
+        <xsd:attribute name="highestSeverity" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="RegistryError">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:string">
+            <xsd:attribute name="codeContext" type="xsd:string" />
+            <xsd:attribute name="errorCode" type="xsd:string" />
+            <xsd:attribute name="severity" type="xsd:string" />
+            <xsd:attribute name="location" type="xsd:string" />
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:element xmlns:q4="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" name="RegistryResponse" type="q4:RegistryResponse" />
+      <xsd:complexType name="RegistryResponse">
+        <xsd:sequence>
+          <xsd:element xmlns:q5="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" minOccurs="0" maxOccurs="1" name="RegistryErrorList" type="q5:RegistryErrorList" />
+        </xsd:sequence>
+        <xsd:anyAttribute />
+      </xsd:complexType>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+      <xsd:element name="AdhocQueryRequest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element xmlns:q6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" minOccurs="0" maxOccurs="1" name="ResponseOption" type="q6:ResponseOption" />
+            <xsd:element xmlns:q7="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" ref="q7:AdhocQuery" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ResponseOption">
+        <xsd:attribute xmlns:q8="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" name="returnType" type="q8:ReturnType" use="required" />
+        <xsd:attribute name="returnComposedObjects" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:simpleType name="ReturnType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="LeafClass" />
+          <xsd:enumeration value="ObjectRef" />
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:element name="AdhocQueryResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element xmlns:q9="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" ref="q9:RegistryObjectList" />
+            <xsd:element xmlns:q10="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" minOccurs="0" maxOccurs="1" ref="q10:RegistryErrorList" />
+          </xsd:sequence>
+          <xsd:anyAttribute />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+      <xsd:element xmlns:q11="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" name="AdhocQuery" type="q11:AdhocQuery" />
+      <xsd:complexType name="AdhocQuery">
+        <xsd:sequence>
+          <xsd:element xmlns:q12="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Slot" type="q12:Slot" />
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" />
+        <xsd:attribute name="home" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Slot">
+        <xsd:sequence>
+          <xsd:element xmlns:q13="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" name="ValueList" type="q13:ArrayOfValue" />
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" />
+        <xsd:attribute name="slotType" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="ArrayOfValue">
+        <xsd:sequence>
+          <xsd:element xmlns:q14="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Value" nillable="true" type="q14:Value" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Value">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:string" />
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:element xmlns:q15="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" name="RegistryObjectList" type="q15:RegistryObjectList" />
+      <xsd:complexType name="RegistryObjectList">
+        <xsd:sequence>
+          <xsd:element xmlns:q16="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="ExtrinsicObject" type="q16:ExtrinsicObject" />
+          <xsd:element xmlns:q17="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="RegistryPackage" type="q17:RegistryPackage" />
+          <xsd:element xmlns:q18="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Classification" type="q18:Classification" />
+          <xsd:element xmlns:q19="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Association" type="q19:Association" />
+          <xsd:element xmlns:q20="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="ObjectRef" type="q20:ObjectRef" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ExtrinsicObject">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q21="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q21:RegistryEntry">
+            <xsd:attribute name="mimeType" type="xsd:string" />
+            <xsd:attribute name="isOpaque" type="xsd:boolean" use="required" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RegistryEntry">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q22="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q22:RegistryObject">
+            <xsd:attribute default="1" name="majorVersion" type="xsd:integer" />
+            <xsd:attribute default="0" name="minorVersion" type="xsd:integer" />
+            <xsd:attribute name="status" type="xsd:string" />
+            <xsd:attribute name="userVersion" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RegistryObject">
+        <xsd:sequence>
+          <xsd:element xmlns:q23="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Slot" type="q23:Slot" />
+          <xsd:element xmlns:q24="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" name="Name" type="q24:InternationalString" />
+          <xsd:element xmlns:q25="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" name="Description" type="q25:InternationalString" />
+          <xsd:element xmlns:q26="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="1" name="VersionInfo" type="q26:VersionInfo" />
+          <xsd:element xmlns:q27="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="Classification" type="q27:Classification" />
+          <xsd:element xmlns:q28="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="ExternalIdentifier" type="q28:ExternalIdentifier" />
+        </xsd:sequence>
+        <xsd:attribute name="accessControlPolicy" type="xsd:IDREF" />
+        <xsd:attribute name="id" type="xsd:ID" />
+        <xsd:attribute name="lid" type="xsd:string" />
+        <xsd:attribute name="objectType" type="xsd:string" />
+        <xsd:attribute name="home" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="InternationalString">
+        <xsd:sequence>
+          <xsd:element xmlns:q29="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" minOccurs="0" maxOccurs="unbounded" name="LocalizedString" type="q29:LocalizedString" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="LocalizedString">
+        <xsd:attribute ref="xml:lang" use="optional" />
+        <xsd:attribute name="charset" type="xsd:string" />
+        <xsd:attribute name="value" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="VersionInfo">
+        <xsd:attribute name="versionName" type="xsd:string" />
+        <xsd:attribute name="comment" type="xsd:string" />
+      </xsd:complexType>
+      <xsd:complexType name="Classification">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q30="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q30:RegistryObject">
+            <xsd:attribute name="classificationScheme" type="xsd:IDREF" />
+            <xsd:attribute name="classifiedObject" type="xsd:IDREF" />
+            <xsd:attribute name="classificationNode" type="xsd:IDREF" />
+            <xsd:attribute name="nodeRepresentation" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ExternalIdentifier">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q31="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q31:RegistryObject">
+            <xsd:attribute name="registryObject" type="xsd:IDREF" />
+            <xsd:attribute name="identificationScheme" type="xsd:IDREF" />
+            <xsd:attribute name="value" type="xsd:string" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Association">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q32="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q32:RegistryObject">
+            <xsd:attribute name="associationType" type="xsd:string" />
+            <xsd:attribute name="sourceObject" type="xsd:IDREF" />
+            <xsd:attribute name="targetObject" type="xsd:IDREF" />
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="RegistryPackage">
+        <xsd:complexContent mixed="false">
+          <xsd:extension xmlns:q33="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" base="q33:RegistryEntry">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" maxOccurs="1" name="RegistryObjectList" type="q33:RegistryObjectList" />
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ObjectRef">
+        <xsd:attribute name="id" type="xsd:ID" />
+        <xsd:attribute name="home" type="xsd:string" />
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="RetrieveDocumentSetRequest">
+    <wsdl:part name="parameters" element="tns:RetrieveDocumentSetRequest" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveDocumentSetResponse">
+    <wsdl:part name="parameters" element="tns:RetrieveDocumentSetResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IRetrieve">
+    <wsdl:operation name="CrossGatewayRetrieveRequest">
+      <wsdl:input wsaw:Action="urn:ihe:iti:2007:CrossGatewayRetrieveAsync" name="RetrieveDocumentSetRequest" message="tns:RetrieveDocumentSetRequest" />
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayRetrieveSyncRequest">
+      <wsdl:input wsaw:Action="urn:ihe:iti:2007:CrossGatewayRetrieve" name="RetrieveDocumentSetRequest" message="tns:RetrieveDocumentSetRequest" />
+      <wsdl:output wsaw:Action="urn:ihe:iti:2007:CrossGatewayRetrieveResponse" name="RetrieveDocumentSetResponse" message="tns:RetrieveDocumentSetResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:i1="urn:ihe:iti:xds-b:2007" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="RespondingGateway" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="IQuery_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:KeyType xmlns:t="http://schemas.xmlsoap.org/ws/2005/02/trust">http://schemas.xmlsoap.org/ws/2005/02/trust/SymmetricKey</t:KeyType>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust10>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="IQuery1_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="IRetrieve_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:IssuedToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+              <sp:RequestSecurityTokenTemplate>
+                <t:KeyType xmlns:t="http://schemas.xmlsoap.org/ws/2005/02/trust">http://schemas.xmlsoap.org/ws/2005/02/trust/SymmetricKey</t:KeyType>
+              </sp:RequestSecurityTokenTemplate>
+              <wsp:Policy>
+                <sp:RequireInternalReference />
+              </wsp:Policy>
+            </sp:IssuedToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust10>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="IRetrieve1_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc?wsdl=wsdl0" />
+  <wsdl:import namespace="urn:ihe:iti:xds-b:2007" location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc?wsdl=wsdl1" />
+  <wsdl:types />
+  <wsdl:binding name="IQuery" type="i0:IQuery">
+    <wsp:PolicyReference URI="#IQuery_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayQueryRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayQueryAsync" style="document" />
+      <wsdl:input name="AdhocQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayQuerySyncRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayQuery" style="document" />
+      <wsdl:input name="AdhocQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AdhocQueryResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IQuery1" type="i0:IQuery">
+    <wsp:PolicyReference URI="#IQuery1_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayQueryRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayQueryAsync" style="document" />
+      <wsdl:input name="AdhocQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayQuerySyncRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayQuery" style="document" />
+      <wsdl:input name="AdhocQueryRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AdhocQueryResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IRetrieve" type="i1:IRetrieve">
+    <wsp:PolicyReference URI="#IRetrieve_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayRetrieveRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayRetrieveAsync" style="document" />
+      <wsdl:input name="RetrieveDocumentSetRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayRetrieveSyncRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayRetrieve" style="document" />
+      <wsdl:input name="RetrieveDocumentSetRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="RetrieveDocumentSetResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="IRetrieve1" type="i1:IRetrieve">
+    <wsp:PolicyReference URI="#IRetrieve1_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CrossGatewayRetrieveRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayRetrieveAsync" style="document" />
+      <wsdl:input name="RetrieveDocumentSetRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+    <wsdl:operation name="CrossGatewayRetrieveSyncRequest">
+      <soap12:operation soapAction="urn:ihe:iti:2007:CrossGatewayRetrieve" style="document" />
+      <wsdl:input name="RetrieveDocumentSetRequest">
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="RetrieveDocumentSetResponse">
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RespondingGateway">
+    <wsdl:port name="IQuery" binding="tns:IQuery">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/ce" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/ce</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IQuery1" binding="tns:IQuery1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IQuery2" binding="tns:IQuery1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/nosaml" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/nosaml</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IQuery_eHEX" binding="tns:IQuery1">
+      <soap12:address location="https://open-ic.epic.com:4437/Interconnect-CE-2015/wcf/epic.community.hie/respondinggateway.svc" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com:4437/Interconnect-CE-2015/wcf/epic.community.hie/respondinggateway.svc</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRetrieve" binding="tns:IRetrieve">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/mtom-ce" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/mtom-ce</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRetrieve1" binding="tns:IRetrieve1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/mtom" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/mtom</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRetrieve2" binding="tns:IRetrieve1">
+      <soap12:address location="https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/nosaml-mtom" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com/Interconnect-CE-2015/wcf/epic.community.hie/RespondingGateway.svc/nosaml-mtom</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+    <wsdl:port name="IRetrieve_eHEX" binding="tns:IRetrieve1">
+      <soap12:address location="https://open-ic.epic.com:4437/interconnect-ce-2015/wcf/epic.community.hie/respondinggateway.svc/mtom" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>https://open-ic.epic.com:4437/interconnect-ce-2015/wcf/epic.community.hie/respondinggateway.svc/mtom</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
