@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.ServiceModel.Channels;
 
 namespace TexasTest
@@ -36,7 +37,6 @@ namespace TexasTest
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
-
             context.BindingParameters.Add(this);
             return context.BuildInnerChannelFactory<TChannel>();
         }

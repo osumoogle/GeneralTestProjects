@@ -111,21 +111,22 @@ namespace TexasTest
             return new Saml2SecurityToken(token.Assertion, keys, new X509SecurityToken(cert));
         }
 
-        private static T GetClient<T>()
+        private static T GetClient<T>(string configuration)
         {
-            var factory = new ChannelFactory<T>("IRespondingGatewaySync");
+            var factory = new ChannelFactory<T>(configuration);
             factory.Credentials.SupportInteractive = false;
             factory.Credentials.UseIdentityConfiguration = true;
 
             ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
-
+            if (typeof(T) == typeof(IQuery))
+                ((CustomBinding) factory.Endpoint.Binding).Elements.Remove<TextMessageEncodingBindingElement>();
             return factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
         }
 
         private static PatientRegistryFindCandidatesResponse DoStuff(PatientName name, AddressInfo address, DateTime birthDate, string gender)
         {
 
-            var client = GetClient<IRespondingGatewaySyncChannel>();
+            var client = GetClient<IRespondingGatewaySyncChannel>("IRespondingGatewaySync");
             client.Open();
             var id = new II();
             var creationTime = new TS();
@@ -229,19 +230,39 @@ namespace TexasTest
 
         private static void GetDocumentMetaData(PatientDemographicInfo info)
         {
-            var factory = new ChannelFactory<IQuery>("IQuery");
-            factory.Credentials.SupportInteractive = false;
-            factory.Credentials.UseIdentityConfiguration = true;
+            //var factory = new ChannelFactory<IQuery>("IQuery");
+            //factory.Credentials.SupportInteractive = false;
+            //factory.Credentials.UseIdentityConfiguration = true;
 
             //((CustomBinding) factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
 
-            var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
+            //var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
+            var client = GetClient<IQuery>("IQuery");
 
             var response = client.CrossGatewayQuerySyncRequest(new AdhocQueryRequest
             {
                 AdhocQuery = new AdhocQuery
                 {
-                    id = info.PatientIdentifier.First().Identifier
+                    id = "urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d",
+                    home = HomeCommunityId,
+                    Slot = new[]
+                    {
+                        new Slot
+                        {
+                            name = "$XDSDocumentEntryPatientId",
+                            ValueList = new[] {new Value {Value1 = info.PatientIdentifier.First().Identifier}}
+                        },
+                        new Slot
+                        {
+                            name = "$XDSDocumentEntryStatus",
+                            ValueList = new [] {new Value { Value1 = "urn:oasis:names:tc:ebxml-2715 regrep:ResponseStatusType: Approved"} }
+                        }
+                    }
+                },
+                ResponseOption = new ResponseOption
+                {
+                    returnComposedObjects = "true",
+                    returnType = ReturnType.LeafClass
                 }
             });
             Console.WriteLine("XCA query didn't crash...");
