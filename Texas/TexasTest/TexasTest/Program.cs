@@ -11,6 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 using TexasTest.XCPD;
 using TexasTest.XCA;
 
@@ -64,7 +65,19 @@ namespace TexasTest
             {
                 var serializer = new JavaScriptSerializer();
                 Console.WriteLine(serializer.Serialize(patient));
-                GetDocumentMetaData(patient);
+                var documents = GetDocumentMetaData(patient);
+                foreach (var doc in documents)
+                {
+                    //var id = doc.Slot.FirstOrDefault(x => x.name.ToLower().Equals("repositoryuniqueid"));
+                    //if (id != null)
+                    //{
+                    //    Console.WriteLine(id.ValueList?[0].Value1);
+                    //    //id);
+                    //}
+                    Console.WriteLine(doc.id);
+                    GetDocument(doc);
+                    //Console.WriteLine(serializer.Serialize(doc));
+                }
             }
             Console.WriteLine("Press enter to exit...");
             Console.ReadLine();
@@ -120,6 +133,8 @@ namespace TexasTest
             ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
             if (typeof(T) == typeof(IQuery))
                 ((CustomBinding) factory.Endpoint.Binding).Elements.Remove<TextMessageEncodingBindingElement>();
+            if (typeof(T) == typeof(IRetrieve))
+                ((CustomBinding)factory.Endpoint.Binding).Elements.Remove<MtomMessageEncodingBindingElement>();
             return factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
         }
 
@@ -228,46 +243,69 @@ namespace TexasTest
             return ack;
         }
 
-        private static void GetDocumentMetaData(PatientDemographicInfo info)
+        private static List<ExtrinsicObject> GetDocumentMetaData(PatientDemographicInfo info)
         {
-            //var factory = new ChannelFactory<IQuery>("IQuery");
-            //factory.Credentials.SupportInteractive = false;
-            //factory.Credentials.UseIdentityConfiguration = true;
-
-            //((CustomBinding) factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
-
-            //var client = factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
             var client = GetClient<IQuery>("IQuery");
-
-            var response = client.CrossGatewayQuerySyncRequest(new AdhocQueryRequest
+            var storedQuery = new StoredQuery(StoredQueryIdentifier.FindDocuments);
+            var query = new AdhocQuery
             {
-                AdhocQuery = new AdhocQuery
+                id = storedQuery.ToString(),
+                home = HomeCommunityId,
+            };
+            var slots = info.PatientIdentifier.Select(pid => new Slot
+            {
+                name = "$XDSDocumentEntryPatientId", ValueList = new[]
                 {
-                    id = "urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d",
-                    home = HomeCommunityId,
-                    Slot = new[]
+                    new Value
                     {
-                        new Slot
-                        {
-                            name = "$XDSDocumentEntryPatientId",
-                            ValueList = new[] {new Value {Value1 = $"'{info.PatientIdentifier.First().Extension}^^^&{info.PatientIdentifier.First().Identifier}&ISO'"}},
-                            slotType = "XDSDocumentEntry.patientId"
-                        },
-                        new Slot
-                        {
-                            name = "$XDSDocumentEntryStatus",
-                            ValueList = new [] {new Value { Value1 = "('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')" } },
-                            slotType = "XDSDocumentEntry.status"
-                        }
+                        Value1 = $"'{pid.Extension}^^^&{pid.Identifier}&ISO'"
                     }
                 },
+                slotType = "XDSDocumentEntry.patientId"
+            }).ToList();
+
+            slots.Add(new Slot
+            {
+                name = "$XDSDocumentEntryStatus",
+                ValueList =
+                            new[] { new Value { Value1 = "('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')" } },
+                slotType = "XDSDocumentEntry.status"
+            });
+            query.Slot = slots.ToArray();
+            var response = client.CrossGatewayQuerySyncRequest(new AdhocQueryRequest
+            {
+                AdhocQuery = query,
                 ResponseOption = new ResponseOption
                 {
                     returnComposedObjects = "true",
                     returnType = ReturnType.LeafClass
                 }
             });
-            Console.WriteLine("XCA query didn't crash...");
+            if (response.RegistryObjectList?.ExtrinsicObject != null && response.RegistryObjectList.ExtrinsicObject.Any())
+            {
+                return response.RegistryObjectList.ExtrinsicObject.ToList();
+            }
+            return null;
+        }
+
+        private static void GetDocument(ExtrinsicObject obj)
+        {
+            var client = GetClient<IRetrieve>("IRetrieve");
+            var storedQuery = new StoredQuery(StoredQueryIdentifier.GetDocuments);
+            var uniqueId = obj.Slot.FirstOrDefault(s => s.name.Equals("repositoryUniqueId")).ValueList.First().Value1;
+            var query = client.CrossGatewayRetrieveSyncRequest(new RetrieveDocumentSetRequest
+            {
+                DocumentRequest = new []
+                {
+                    new DocumentRequest
+                    {
+                        HomeCommunityId = obj.home,
+                        DocumentUniqueId = obj.id,
+                        RepositoryUniqueId = uniqueId
+                    }
+                }
+            });
+            Console.WriteLine("DocumentRetrieve didn't crash...");
         }
     }
 }

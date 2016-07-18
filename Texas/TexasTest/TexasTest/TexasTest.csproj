@@ -70,6 +70,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="StoredQuery.cs" />
+    <Compile Include="StoredQueryIdentifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
