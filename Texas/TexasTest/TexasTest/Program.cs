@@ -18,7 +18,7 @@ namespace TexasTest
 {
     internal class Program
     {
-        private const string HomeCommunityId = "2.16.840.1.113883.3.3126.20.3.7";
+        private const string HomeCommunityId = "urn:oid:2.16.840.1.113883.3.3126.20.3.7";
         private const string CertificateName = "CN=kno2fy-cq.com";
 
         static void Main(string[] args)
@@ -94,10 +94,10 @@ namespace TexasTest
                     new Claim(ClaimTypes.NameIdentifier, "test"),
                     new Claim("urn:oasis:names:tc:xspa:1.0:subject:subject-id", "test"),
                     new Claim("urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName", "test"),
-                    new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization", $"urn:oid:{HomeCommunityId}"),
-                    new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization-id", $"urn:oid:{HomeCommunityId}"),
-                    new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}"),
-                    new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}")
+                    //new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization", $"urn:oid:{HomeCommunityId}"),
+                    //new Claim("urn:oasis:names:tc:xspa:1.0:subject:organization-id", $"urn:oid:{HomeCommunityId}"),
+                    new Claim("urn:nhin:names:saml:homeCommunityId", $"{HomeCommunityId}"),
+                    //new Claim("urn:nhin:names:saml:homeCommunityId", $"urn:oid:{HomeCommunityId}")
                 }),
                 SigningCredentials = new X509SigningCredentials(cert, SecurityAlgorithms.RsaSha1Signature, SecurityAlgorithms.Sha1Digest),
                 Proof = new AsymmetricProofDescriptor(ski)
@@ -250,12 +250,14 @@ namespace TexasTest
                         new Slot
                         {
                             name = "$XDSDocumentEntryPatientId",
-                            ValueList = new[] {new Value {Value1 = info.PatientIdentifier.First().Identifier}}
+                            ValueList = new[] {new Value {Value1 = $"'{info.PatientIdentifier.First().Extension}^^^&{info.PatientIdentifier.First().Identifier}&ISO'"}},
+                            slotType = "XDSDocumentEntry.patientId"
                         },
                         new Slot
                         {
                             name = "$XDSDocumentEntryStatus",
-                            ValueList = new [] {new Value { Value1 = "urn:oasis:names:tc:ebxml-2715 regrep:ResponseStatusType: Approved"} }
+                            ValueList = new [] {new Value { Value1 = "('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')" } },
+                            slotType = "XDSDocumentEntry.status"
                         }
                     }
                 },

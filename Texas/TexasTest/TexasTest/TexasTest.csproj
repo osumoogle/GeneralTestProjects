@@ -53,6 +53,8 @@
     <Compile Include="CustomTextMessageBindingElement.cs" />
     <Compile Include="CustomTextMessageEncoder.cs" />
     <Compile Include="CustomTextMessageEncoderFactory.cs" />
+    <Compile Include="DocumentStatus.cs" />
+    <Compile Include="DocumentStatusObject.cs" />
     <Compile Include="PatientDemographicInfo.cs" />
     <Compile Include="PatientIdentifier.cs" />
     <Compile Include="PatientName.cs" />
