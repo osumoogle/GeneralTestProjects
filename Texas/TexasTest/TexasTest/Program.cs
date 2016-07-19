@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -11,7 +12,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Web.Script.Serialization;
-using System.Windows.Forms;
 using TexasTest.XCPD;
 using TexasTest.XCA;
 using TextAndMtom;
@@ -69,7 +69,6 @@ namespace TexasTest
                 var documents = GetDocumentMetaData(patient);
                 foreach (var doc in documents)
                 {
-                    Console.WriteLine(doc.id);
                     GetDocument(doc);
                 }
             }
@@ -245,7 +244,7 @@ namespace TexasTest
             return ack;
         }
 
-        private static List<ExtrinsicObject> GetDocumentMetaData(PatientDemographicInfo info)
+        private static IEnumerable<ExtrinsicObject> GetDocumentMetaData(PatientDemographicInfo info)
         {
             var client = GetClient<IQuery>("IQuery");
             var storedQuery = new StoredQuery(StoredQueryIdentifier.FindDocuments);
@@ -290,13 +289,13 @@ namespace TexasTest
             return null;
         }
 
-        private static RetrieveDocumentSetResponse  GetDocument(ExtrinsicObject obj)
+        private static void GetDocument(ExtrinsicObject obj)
         {
             var documentId = obj.ExternalIdentifier.First(e => e.Name.First().value.Equals("XDSDocumentEntry.uniqueId")).value;
-
+            var name = obj.Name.First().value;
             var client = GetClient<IRetrieve>("IRetrieve");
             var repositoryUniqueId = obj.Slot.First(s => s.name.Equals("repositoryUniqueId")).ValueList.First().Value1;
-            return client.CrossGatewayRetrieveSyncRequest(new RetrieveDocumentSetRequest
+            var document = client.CrossGatewayRetrieveSyncRequest(new RetrieveDocumentSetRequest
             {
                 DocumentRequest = new []
                 {
@@ -308,6 +307,11 @@ namespace TexasTest
                     }
                 }
             });
+            foreach (var d in document.DocumentResponse)
+            {
+                var doc = System.Text.Encoding.UTF8.GetString(d.Document);
+                File.WriteAllText($"C:\\temp\\{d.DocumentUniqueId}.xml", doc);
+            }
         }
     }
 }
