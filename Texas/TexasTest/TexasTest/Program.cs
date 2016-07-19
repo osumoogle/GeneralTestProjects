@@ -14,6 +14,7 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using TexasTest.XCPD;
 using TexasTest.XCA;
+using TextAndMtom;
 
 namespace TexasTest
 {
@@ -130,11 +131,20 @@ namespace TexasTest
             factory.Credentials.SupportInteractive = false;
             factory.Credentials.UseIdentityConfiguration = true;
 
-            ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
             if (typeof(T) == typeof(IQuery))
+            {
+                ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
                 ((CustomBinding) factory.Endpoint.Binding).Elements.Remove<TextMessageEncodingBindingElement>();
-            if (typeof(T) == typeof(IRetrieve))
+            }
+            else if (typeof(T) == typeof(IRetrieve))
+            {
+                //((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement("Mtom", "application/xop+xml", MessageVersion.Soap12WSAddressing10));
                 ((CustomBinding)factory.Endpoint.Binding).Elements.Remove<MtomMessageEncodingBindingElement>();
+                ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new TextOrMtomEncodingBindingElement());
+            }
+            else
+                ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement());
+
             return factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
         }
 

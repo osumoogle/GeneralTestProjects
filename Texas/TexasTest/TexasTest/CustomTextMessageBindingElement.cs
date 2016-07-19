@@ -16,9 +16,10 @@ namespace TexasTest
             MessageVersion = version;
         }
 
-        public CustomTextMessageBindingElement(): this("UTF-8", "application/soap+xml", MessageVersion.Soap12WSAddressing10)
+        public CustomTextMessageBindingElement()
+            : this("UTF-8", "application/soap+xml", MessageVersion.Soap12WSAddressing10)
         {
-            
+
         }
 
         public override MessageVersion MessageVersion { get; set; }
