@@ -69,15 +69,8 @@ namespace TexasTest
                 var documents = GetDocumentMetaData(patient);
                 foreach (var doc in documents)
                 {
-                    //var id = doc.Slot.FirstOrDefault(x => x.name.ToLower().Equals("repositoryuniqueid"));
-                    //if (id != null)
-                    //{
-                    //    Console.WriteLine(id.ValueList?[0].Value1);
-                    //    //id);
-                    //}
                     Console.WriteLine(doc.id);
                     GetDocument(doc);
-                    //Console.WriteLine(serializer.Serialize(doc));
                 }
             }
             Console.WriteLine("Press enter to exit...");
@@ -138,7 +131,6 @@ namespace TexasTest
             }
             else if (typeof(T) == typeof(IRetrieve))
             {
-                //((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new CustomTextMessageBindingElement("Mtom", "application/xop+xml", MessageVersion.Soap12WSAddressing10));
                 ((CustomBinding)factory.Endpoint.Binding).Elements.Remove<MtomMessageEncodingBindingElement>();
                 ((CustomBinding)factory.Endpoint.Binding).Elements.Insert(1, new TextOrMtomEncodingBindingElement());
             }
@@ -298,24 +290,24 @@ namespace TexasTest
             return null;
         }
 
-        private static void GetDocument(ExtrinsicObject obj)
+        private static RetrieveDocumentSetResponse  GetDocument(ExtrinsicObject obj)
         {
+            var documentId = obj.ExternalIdentifier.First(e => e.Name.First().value.Equals("XDSDocumentEntry.uniqueId")).value;
+
             var client = GetClient<IRetrieve>("IRetrieve");
-            var storedQuery = new StoredQuery(StoredQueryIdentifier.GetDocuments);
-            var uniqueId = obj.Slot.FirstOrDefault(s => s.name.Equals("repositoryUniqueId")).ValueList.First().Value1;
-            var query = client.CrossGatewayRetrieveSyncRequest(new RetrieveDocumentSetRequest
+            var repositoryUniqueId = obj.Slot.First(s => s.name.Equals("repositoryUniqueId")).ValueList.First().Value1;
+            return client.CrossGatewayRetrieveSyncRequest(new RetrieveDocumentSetRequest
             {
                 DocumentRequest = new []
                 {
                     new DocumentRequest
                     {
                         HomeCommunityId = obj.home,
-                        DocumentUniqueId = obj.id,
-                        RepositoryUniqueId = uniqueId
+                        DocumentUniqueId = documentId,
+                        RepositoryUniqueId = repositoryUniqueId
                     }
                 }
             });
-            Console.WriteLine("DocumentRetrieve didn't crash...");
         }
     }
 }
