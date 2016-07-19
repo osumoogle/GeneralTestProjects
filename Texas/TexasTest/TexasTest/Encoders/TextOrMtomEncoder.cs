@@ -36,18 +36,24 @@ namespace TextAndMtom
 
         public override Message ReadMessage(ArraySegment<byte> buffer, BufferManager bufferManager, string contentType)
         {
-            //var result = _mtomEncoder.ReadMessage(buffer, bufferManager, contentType);
-            //result.Properties.Add(TextOrMtomEncodingBindingElement.IsIncomingMessageMtomPropertyName, IsMtomMessage(contentType));
-            //return result;
-            var msgContents = new byte[buffer.Count];
-            Array.Copy(buffer.Array, buffer.Offset, msgContents, 0, msgContents.Length);
-            bufferManager.ReturnBuffer(buffer.Array);
-
-            var stream = new MemoryStream(msgContents);
+            var result = _mtomEncoder.ReadMessage(buffer, bufferManager, contentType);
+            result.Properties.Add(TextOrMtomEncodingBindingElement.IsIncomingMessageMtomPropertyName, IsMtomMessage(contentType));
+            var body = result.ToString();
+            var stream = GenerateStreamFromString(body);
             stream = ProcessMemoryStream(stream, false);
-            var message = _mtomEncoder.ReadMessage(stream, int.MaxValue);
-            message.Properties.Add(TextOrMtomEncodingBindingElement.IsIncomingMessageMtomPropertyName, IsMtomMessage(contentType));
+            var reader = XmlReader.Create(stream);
+            var message = Message.CreateMessage(reader, int.MaxValue, MessageVersion);
             return message;
+        }
+
+        public Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
 
         public override ArraySegment<byte> WriteMessage(Message message, int maxMessageSize, BufferManager bufferManager, int messageOffset)
@@ -90,6 +96,50 @@ namespace TextAndMtom
             var result = _mtomEncoder.ReadMessage(stream, maxSizeOfHeaders, contentType);
             result.Properties.Add(TextOrMtomEncodingBindingElement.IsIncomingMessageMtomPropertyName, IsMtomMessage(contentType));
             return result;
+        }
+
+        private static MemoryStream ProcessMemoryStream(XmlReader reader)
+        {
+            StreamWriter xmlStream = null;
+            var outputStream = new MemoryStream();
+            var continueFilter = false;
+            try
+            {
+                xmlStream = new StreamWriter(outputStream);
+                using (
+                    var writer = XmlWriter.Create(xmlStream,
+                        new XmlWriterSettings {ConformanceLevel = ConformanceLevel.Auto}))
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.LocalName.Equals("SignatureConfirmation") &&
+                            reader.NamespaceURI.Equals(
+                                "http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd"))
+                        {
+                            if (!reader.IsEmptyElement) continueFilter = reader.IsStartElement();
+                        }
+                        else if (reader.LocalName.Equals("Signature") &&
+                                 reader.NamespaceURI.Equals("http://www.w3.org/2000/09/xmldsig#"))
+                        {
+                            if (!reader.IsEmptyElement) continueFilter = reader.IsStartElement();
+                        }
+                        else if (continueFilter)
+                        {
+                            // continue to next node
+                        }
+                        else
+                            XmlHelper.WriteShallowNode(reader, writer);
+                    }
+                    writer.Flush();
+                    reader.Close();
+                }
+                outputStream.Position = 0;
+                return outputStream;
+            }
+            finally
+            {
+                xmlStream?.Dispose();
+            }
         }
 
         private static MemoryStream ProcessMemoryStream(Stream inputStream, bool dispose)
