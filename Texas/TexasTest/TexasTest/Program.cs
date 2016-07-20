@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Globalization;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
@@ -37,7 +38,7 @@ namespace TexasTest
                 ZipCode = "35080",
             };
             var birthDate = new DateTime(1982, 1, 2);
-            var ack = DoStuff(name, address, birthDate, "M");
+            var ack = GetPatientInformation(name, address, birthDate, "M");
 
             Console.WriteLine($"{ack.controlActProcess.subject != null}");
             Console.WriteLine($"{ack.controlActProcess.queryAck.queryResponseCode.code}");
@@ -66,10 +67,10 @@ namespace TexasTest
             {
                 var serializer = new JavaScriptSerializer();
                 Console.WriteLine(serializer.Serialize(patient));
-                var documents = GetDocumentMetaData(patient);
+                var documents = GetDocumentsMetaData(patient);
                 foreach (var doc in documents)
                 {
-                    GetDocument(doc);
+                    GetDocuments(doc);
                 }
             }
             Console.WriteLine("Press enter to exit...");
@@ -117,9 +118,22 @@ namespace TexasTest
             return new Saml2SecurityToken(token.Assertion, keys, new X509SecurityToken(cert));
         }
 
+        private static string GetEndpoint<T>()
+        {
+            var theType = typeof(T);
+            if (theType == typeof(IQuery))
+                return ConfigurationManager.AppSettings["IQueryUrl"];
+            if (theType == typeof(IRetrieve))
+                return ConfigurationManager.AppSettings["IRetrieveUrl"];
+            if (theType == typeof(IRespondingGatewaySyncChannel))
+                return ConfigurationManager.AppSettings["IRespondingGatewaySyncUrl"];
+            return string.Empty;
+        }
+
         private static T GetClient<T>(string configuration)
         {
             var factory = new ChannelFactory<T>(configuration);
+            factory.Endpoint.Address = new EndpointAddress(GetEndpoint<T>());
             factory.Credentials.SupportInteractive = false;
             factory.Credentials.UseIdentityConfiguration = true;
 
@@ -139,7 +153,7 @@ namespace TexasTest
             return factory.CreateChannelWithIssuedToken(GeneratedSaml2Token());
         }
 
-        private static PatientRegistryFindCandidatesResponse DoStuff(PatientName name, AddressInfo address, DateTime birthDate, string gender)
+        private static PatientRegistryFindCandidatesResponse GetPatientInformation(PatientName name, AddressInfo address, DateTime birthDate, string gender)
         {
 
             var client = GetClient<IRespondingGatewaySyncChannel>("IRespondingGatewaySync");
@@ -244,7 +258,7 @@ namespace TexasTest
             return ack;
         }
 
-        private static IEnumerable<ExtrinsicObject> GetDocumentMetaData(PatientDemographicInfo info)
+        private static IEnumerable<ExtrinsicObject> GetDocumentsMetaData(PatientDemographicInfo info)
         {
             var client = GetClient<IQuery>("IQuery");
             var storedQuery = new StoredQuery(StoredQueryIdentifier.FindDocuments);
@@ -289,7 +303,7 @@ namespace TexasTest
             return null;
         }
 
-        private static void GetDocument(ExtrinsicObject obj)
+        private static void GetDocuments(ExtrinsicObject obj)
         {
             var documentId = obj.ExternalIdentifier.First(e => e.Name.First().value.Equals("XDSDocumentEntry.uniqueId")).value;
             var name = obj.Name.First().value;
